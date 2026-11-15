@@ -2,6 +2,14 @@
 import { useEffect, useState } from "react";
 import Grades from "./Grades.jsx";
 
+const API_URL = "https://roblox-academy-gw8w.onrender.com";
+
+function backendUrl(url) {
+  if (!url || typeof url !== "string") return "";
+  if (/^(https?:|data:|blob:)/i.test(url)) return url;
+  return `${API_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
 const iconPaths = {
   home: ["M3 10.5 12 3l9 7.5", "M5.5 9.5V21h13V9.5", "M9 21v-7h6v7"],
   users: ["M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2", "M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8", "M20 21v-2a4 4 0 0 0-3-3.87", "M16 3.13a4 4 0 0 1 0 7.75"],
@@ -193,7 +201,7 @@ function App() {
         favicon.rel = "icon";
         document.head.appendChild(favicon);
       }
-      favicon.href = serverConfig.faviconUrl;
+      favicon.href = backendUrl(serverConfig.faviconUrl);
     }
   }, [serverConfig.siteName, serverConfig.faviconUrl]);
 
@@ -533,7 +541,7 @@ function App() {
   }
 
   function getCourseFileUrl(file) {
-    return `/api/courses/files/${encodeURIComponent(file.id)}`;
+    return backendUrl(`/api/courses/files/${encodeURIComponent(file.id)}`);
   }
 
   function getCourseFileKind(file) {
@@ -688,16 +696,16 @@ function App() {
                       <span>{file.originalName || "Fichier"}<small>{formatFileSize(file.size)}</small></span>
                     </div>
                     {kind === "video" && (
-                      <video className="course-video-player" controls preload="metadata" src={url}>
+                      <video className="course-video-player" controls preload="metadata" src={url} crossOrigin="use-credentials">
                         Ton navigateur ne peut pas lire cette vidéo.
                       </video>
                     )}
                     {kind === "image" && (
                       <a href={url} target="_blank" rel="noreferrer" className="course-image-link">
-                        <img src={url} alt={file.originalName || "Image du cours"} loading="lazy" />
+                        <img src={url} alt={file.originalName || "Image du cours"} loading="lazy" crossOrigin="use-credentials" />
                       </a>
                     )}
-                    {kind === "audio" && <audio className="course-audio-player" controls preload="metadata" src={url} />}
+                    {kind === "audio" && <audio className="course-audio-player" controls preload="metadata" src={url} crossOrigin="use-credentials" />}
                     {(kind === "pdf" || kind === "document") && (
                       <a className="course-resource-link" href={url} target="_blank" rel="noreferrer">
                         {kind === "pdf" ? "Ouvrir / télécharger le PDF" : "Télécharger le fichier"}
@@ -824,16 +832,16 @@ function App() {
                             <span>{file.originalName} <small>{formatFileSize(file.size)}</small></span>
                           </div>
                           {kind === "video" && (
-                            <video className="course-video-player" controls preload="metadata" src={url}>
+                            <video className="course-video-player" controls preload="metadata" src={url} crossOrigin="use-credentials">
                               Ton navigateur ne peut pas lire cette vidéo.
                             </video>
                           )}
                           {kind === "image" && (
                             <a href={url} target="_blank" rel="noreferrer" className="course-image-link">
-                              <img src={url} alt={file.originalName} loading="lazy" />
+                              <img src={url} alt={file.originalName} loading="lazy" crossOrigin="use-credentials" />
                             </a>
                           )}
-                          {kind === "audio" && <audio className="course-audio-player" controls preload="metadata" src={url} />}
+                          {kind === "audio" && <audio className="course-audio-player" controls preload="metadata" src={url} crossOrigin="use-credentials" />}
                           {kind !== "video" && kind !== "image" && kind !== "audio" && (
                             <a className="course-resource-link" href={url} target="_blank" rel="noreferrer">
                               {kind === "pdf" ? "Ouvrir / télécharger le PDF" : "Télécharger le fichier"}
@@ -1872,7 +1880,7 @@ function App() {
           </div>
           <div className="settings-profile-layout">
             <div className="settings-profile-avatar">
-              {user?.avatarUrl ? <img src={user.avatarUrl} alt="Photo de profil" /> : <span><AppIcon name="user" size={32} /></span>}
+              {user?.avatarUrl ? <img src={backendUrl(user.avatarUrl)} alt="Photo de profil" crossOrigin="use-credentials" /> : <span><AppIcon name="user" size={32} /></span>}
             </div>
             <div className="settings-profile-details">
               <div className="settings-info-grid">
@@ -2177,13 +2185,13 @@ function App() {
               <span>Logo de la plateforme</span>
               <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={(event) => { uploadServerAsset("logo", event.target.files?.[0]); event.target.value = ""; }} disabled={serverAssetUploading.logo} />
               <small>{serverAssetUploading.logo ? "Importation du logo..." : "Choisis une image depuis ton ordinateur (5 Mo maximum)."}</small>
-              {serverConfig.logoUrl && <img src={serverConfig.logoUrl} alt="Logo sélectionné" style={{ maxWidth: "150px", maxHeight: "90px", objectFit: "contain", marginTop: "8px" }} />}
+              {serverConfig.logoUrl && <img src={backendUrl(serverConfig.logoUrl)} alt="Logo sélectionné" style={{ maxWidth: "150px", maxHeight: "90px", objectFit: "contain", marginTop: "8px" }} />}
             </label>
             <label className="server-field">
               <span>Icône du site (favicon)</span>
               <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={(event) => { uploadServerAsset("icon", event.target.files?.[0]); event.target.value = ""; }} disabled={serverAssetUploading.icon} />
               <small>{serverAssetUploading.icon ? "Importation de l'icône..." : "Choisis l'icône affichée dans l'onglet du navigateur (5 Mo maximum)."}</small>
-              {serverConfig.faviconUrl && <img src={serverConfig.faviconUrl} alt="Icône sélectionnée" style={{ width: "48px", height: "48px", objectFit: "contain", marginTop: "8px" }} />}
+              {serverConfig.faviconUrl && <img src={backendUrl(serverConfig.faviconUrl)} alt="Icône sélectionnée" style={{ width: "48px", height: "48px", objectFit: "contain", marginTop: "8px" }} />}
             </label>
           </div>
           <label className="server-field server-field-full"><span>Description de la plateforme</span><textarea rows="3" value={serverConfig.description} onChange={(event) => updateServerConfig("description", event.target.value)} /></label>
@@ -2217,7 +2225,7 @@ function App() {
         <section className="settings-card">
           <div className="settings-card-heading"><span className="settings-icon"><AppIcon name="image" /></span><div><h3>Aperçu du site</h3><p>Vérifie le rendu avant la future publication.</p></div></div>
           <div className={`server-live-preview ${serverConfig.theme}`} style={{ "--preview-primary": serverConfig.primaryColor, "--preview-secondary": serverConfig.secondaryColor, "--preview-accent": serverConfig.accentColor, "--preview-background": serverConfig.backgroundColor }}>
-            <div className="server-preview-navbar"><div className="server-preview-logo">{serverConfig.logoUrl ? <img src={serverConfig.logoUrl} alt="Logo du site" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : <b>{serverConfig.logoText || "RA"}</b>}<strong>{serverConfig.headerName || serverConfig.siteName}</strong></div><span>Aperçu visiteur</span></div>
+            <div className="server-preview-navbar"><div className="server-preview-logo">{serverConfig.logoUrl ? <img src={backendUrl(serverConfig.logoUrl)} alt="Logo du site" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : <b>{serverConfig.logoText || "RA"}</b>}<strong>{serverConfig.headerName || serverConfig.siteName}</strong></div><span>Aperçu visiteur</span></div>
             <div className="server-preview-hero"><small>PLATEFORME ÉDUCATIVE</small><h2>{serverConfig.welcomeTitle}</h2><p>{serverConfig.welcomeText}</p><button type="button" style={{ background: serverConfig.primaryColor }}>Découvrir la plateforme</button></div>
             <div className="server-preview-description">{serverConfig.description}</div>
           </div>
@@ -2359,7 +2367,7 @@ function App() {
         <div className="ra-login-brand">
           <div className="ra-login-logo">
             {serverConfig.logoUrl
-              ? <img src={serverConfig.logoUrl} alt={`Logo ${serverConfig.siteName}`} />
+              ? <img src={backendUrl(serverConfig.logoUrl)} alt={`Logo ${serverConfig.siteName}`} />
               : (serverConfig.logoText || "RA")}
           </div>
           <h1 className="ra-login-brand-name">{serverConfig.headerName || serverConfig.siteName}</h1>
@@ -2417,7 +2425,7 @@ function App() {
         <main className="dashboard">
           <aside className="sidebar">
             <div className="sidebar-brand">
-              <div className="logo-icon">{serverConfig.logoUrl ? <img src={serverConfig.logoUrl} alt="Logo de Roblox Academy" /> : (serverConfig.logoText || "RA")}</div>
+              <div className="logo-icon">{serverConfig.logoUrl ? <img src={backendUrl(serverConfig.logoUrl)} alt="Logo de Roblox Academy" /> : (serverConfig.logoText || "RA")}</div>
               <div>
                 <strong>{serverConfig.headerName || serverConfig.siteName}</strong>
                 <small>{user.role === "eleve" ? "Espace élève" : user.role === "professeur" ? "Espace professeur" : "Administration"}</small>
@@ -2441,7 +2449,7 @@ function App() {
 
             <div className="sidebar-bottom">
               <div className="profile-mini">
-                <div className="avatar">{user.avatarUrl ? <img src={user.avatarUrl} alt="" /> : <AppIcon name="user" size={20} />}</div>
+                <div className="avatar">{user.avatarUrl ? <img src={backendUrl(user.avatarUrl)} alt="" crossOrigin="use-credentials" /> : <AppIcon name="user" size={20} />}</div>
                 <div>
                   <strong>{user.username}</strong>
                   <small>{roleLabels[user.role] || user.role}</small>
@@ -2463,7 +2471,7 @@ function App() {
 
               <div className="header-user">
                 <span className="online-dot"></span>
-                {user.avatarUrl && <img className="header-avatar" src={user.avatarUrl} alt="" />}
+                {user.avatarUrl && <img className="header-avatar" src={backendUrl(user.avatarUrl)} alt="" crossOrigin="use-credentials" />}
                 {user.username}
                 <span className="crown"><AppIcon name="crown" size={15} /></span>
               </div>
@@ -2831,7 +2839,7 @@ function App() {
       <section className="ra-home-hero">
         <div className="ra-home-logo">
           {serverConfig.logoUrl
-            ? <img src={serverConfig.logoUrl} alt={`Logo ${serverConfig.siteName}`} />
+            ? <img src={backendUrl(serverConfig.logoUrl)} alt={`Logo ${serverConfig.siteName}`} />
             : (serverConfig.logoText || "RA")}
         </div>
         <h2 className="ra-home-name">{serverConfig.headerName || serverConfig.siteName}</h2>
