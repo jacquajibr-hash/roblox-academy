@@ -1,0 +1,17 @@
+{
+  "name": "roblox-academy-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^16.0.0",
+    "express": "^5.0.0",
+    "express-session": "^1.19.0",
+    "multer": "^2.5.0"
+  }
+}

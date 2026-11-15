@@ -1,0 +1,25 @@
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Dépendances
+node_modules/
+
+# Fichiers générés
+dist/
+coverage/
+
+# Données privées et sauvegardes
+backend/data/
+backend/backups/
+backend/uploads/
+
+# Journaux
+*.log
+npm-debug.log*
+
+# Fichiers système
+.DS_Store
+Thumbs.db
