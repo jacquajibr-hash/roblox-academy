@@ -12,6 +12,7 @@ import activityRoutes from "./routes/activityRoutes.js";
 import backupRoutes from "./routes/backupRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import serverSettingsRoutes from "./routes/serverSettingsRoutes.js";
+import founderRecoveryRoutes from "./routes/founderRecoveryRoutes.js";
 
 import { logActivity } from "./middleware/logActivity.js";
 
@@ -21,10 +22,8 @@ if (!process.env.SESSION_SECRET) {
   throw new Error("SESSION_SECRET manquant dans le fichier .env");
 }
 
-// Render utilise un proxy HTTPS.
 app.set("trust proxy", 1);
 
-// Autorisation du frontend Render.
 const allowedOrigins = [
   "https://academy-kskv.onrender.com"
 ];
@@ -41,7 +40,7 @@ app.use((req, res, next) => {
     );
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "Content-Type, Authorization"
+      "Content-Type, Authorization, X-Founder-Recovery-Key"
     );
     res.setHeader("Vary", "Origin");
   }
@@ -77,6 +76,8 @@ app.get("/api/health", (req, res) => {
     message: "Roblox Academy fonctionne !"
   });
 });
+
+app.use("/api/recovery/founder", founderRecoveryRoutes);
 
 app.use("/api/auth", authRoutes);
 
